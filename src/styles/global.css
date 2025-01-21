@@ -1,0 +1,9 @@
+.title {
+  font-size: medium;
+  font-weight: bold;
+  color: rgb(255, 255, 255);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  background-color: rgb(47, 47, 92);
+  text-align: center;
+}

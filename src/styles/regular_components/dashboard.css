@@ -1,0 +1,36 @@
+.cards {
+  width: 205px;
+  text-align: center;
+  background-color: rgb(255, 255, 255);
+}
+
+/* .card :hover {
+  background: rgba(255, 255, 255, 0.54);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(3.8px);
+  -webkit-backdrop-filter: blur(3.8px);
+  border: 1px solid rgba(255, 255, 255, 1);
+} */
+
+.dashboard-content {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cardtitle {
+  background-color: rgb(173, 173, 245);
+  height: 35px;
+}
+
+.cards {
+  /* From https://css.glass */
+  background: rgba(255, 255, 255, 0.54);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(3.8px);
+  -webkit-backdrop-filter: blur(3.8px);
+  border: 1px solid rgba(255, 255, 255, 1);
+}
