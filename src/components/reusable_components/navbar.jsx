@@ -22,13 +22,13 @@ const Navbar = () => {
             </Link>
           </li>
           <li className="sidebar-item">
-            <Link className="sidebar-link" to="#">
+            <Link className="sidebar-link" to="/user-management">
               User Management
             </Link>
           </li>
           <li className="sidebar-item">
-            <Link className="sidebar-link" to="#">
-              Inventory
+            <Link className="sidebar-link" to="/inventory-management">
+              Inventory Management
             </Link>
           </li>
           <li className="sidebar-item">

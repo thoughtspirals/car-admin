@@ -1,15 +1,9 @@
 /* footer.css */
-.footer {
-  background-color: #333; /* Dark background for footer */
-  color: #fff;
-  padding: 2rem 0;
-  text-align: center;
-}
 
 .footer .footer-content {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  /* justify-content: space-between;
+  align-items: center; */
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;

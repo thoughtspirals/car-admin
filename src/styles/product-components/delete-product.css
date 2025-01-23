@@ -1,0 +1,17 @@
+.product-card {
+  background: rgba(138, 133, 133, 0.54);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(3.8px);
+  -webkit-backdrop-filter: blur(3.8px);
+  border: 1px solid rgba(255, 255, 255, 1);
+  padding: 15px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.delete-product-container {
+  justify-content: center;
+  align-items: center;
+  justify-items: center;
+}
