@@ -33,9 +33,9 @@ const CreateProfile = () => {
               <div className="form-group">
                 <label htmlFor="password">Name</label>
                 <input
-                  type="password"
-                  id="password"
-                  name="password"
+                  type="Name"
+                  id="Name"
+                  name="Name"
                   className="form-control"
                 />
               </div>
@@ -43,9 +43,9 @@ const CreateProfile = () => {
               <div className="form-group">
                 <label htmlFor="password">Title</label>
                 <input
-                  type="password"
-                  id="password"
-                  name="password"
+                  type="Title"
+                  id="Title"
+                  name="Title"
                   className="form-control"
                 />
               </div>
@@ -53,15 +53,25 @@ const CreateProfile = () => {
               <div className="form-group">
                 <label htmlFor="password">Email</label>
                 <input
-                  type="password"
-                  id="password"
-                  name="password"
+                  type="Email"
+                  id="Email"
+                  name="Email"
                   className="form-control"
                 />
               </div>
 
               <div className="form-group">
                 <label htmlFor="password">Phone</label>
+                <input
+                  type="Phone"
+                  id="Phone"
+                  name="Phone"
+                  className="form-control"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
                 <input
                   type="password"
                   id="password"

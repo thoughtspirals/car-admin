@@ -1,13 +1,40 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "../../styles/global.css";
 import "../../styles/admin-components/login.css";
+import { useDispatch } from "react-redux"; // Import redux
+import { login } from "../../redux/actions/authActions"; // Import login action
+import axios from "axios"; // Axios import
 
 const AdminLogin = () => {
-  const handleSubmit = (e) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission (e.g., save or update the product)
-    console.log("Logged in");
+
+    try {
+      const response = await axios.post(
+        "/admin/api/v1/admin-login",
+        { username, password },
+        { withCredentials: true }
+      );
+      dispatch(login(response.data));
+
+      console.log("Response data:", response.data);
+
+      if (response.data.success) {
+        const adminData = response.data.admin; // Assuming you get admin data in the response
+        dispatch(login(adminData)); // Dispatch the login action
+        navigate("/admin/dashboard"); // Redirect to the admin dashboard
+      } else {
+        console.log("Login failed:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error logging in:", error);
+    }
   };
 
   return (
@@ -27,6 +54,8 @@ const AdminLogin = () => {
                   id="username"
                   name="username"
                   className="form-control"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                 />
               </div>
 
@@ -37,6 +66,8 @@ const AdminLogin = () => {
                   id="password"
                   name="password"
                   className="form-control"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
 

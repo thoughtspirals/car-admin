@@ -11,8 +11,11 @@
 }
 
 .AdminBody {
-  padding-top: 2%;
+  padding-top: 1%;
   justify-items: center;
+  padding-bottom: 5%;
+  align-content: center;
+  padding-left: 10%;
 }
 
 .forgotPassword {
