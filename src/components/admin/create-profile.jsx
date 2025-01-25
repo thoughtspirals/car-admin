@@ -1,13 +1,37 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../../styles/global.css";
 import "../../styles/admin-components/login.css";
+import axios from "axios";
+import { AdminContext } from "../../context/admin-context";
 
 const CreateProfile = () => {
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { adminDetails, updateAdminDetails } = useContext(AdminContext);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Profile Updates");
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const res = await axios.post("admin/api/v1/create-admin", {
+        ...adminDetails, // Spread adminDetails to send all fields
+      });
+
+      setSuccess("Profile Created Successfully");
+      alert("Profile Created Successfully");
+      navigate("/login");
+    } catch (error) {
+      setError(error.response?.data?.message || "An error occurred.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -19,70 +43,45 @@ const CreateProfile = () => {
       <div className="AdminBody container">
         <div className="admin-card card">
           <div className="card-body">
+            {error && <div className="alert alert-danger">{error}</div>}
+            {success && <div className="alert alert-success">{success}</div>}
+
             <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label htmlFor="username">Username</label>
-                <input
-                  type="text"
-                  id="username"
-                  name="username"
-                  className="form-control"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="password">Name</label>
-                <input
-                  type="Name"
-                  id="Name"
-                  name="Name"
-                  className="form-control"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="password">Title</label>
-                <input
-                  type="Title"
-                  id="Title"
-                  name="Title"
-                  className="form-control"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="password">Email</label>
-                <input
-                  type="Email"
-                  id="Email"
-                  name="Email"
-                  className="form-control"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="password">Phone</label>
-                <input
-                  type="Phone"
-                  id="Phone"
-                  name="Phone"
-                  className="form-control"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="password">Password</label>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  className="form-control"
-                />
-              </div>
+              {[
+                "username",
+                "name",
+                "title",
+                "email",
+                "phone",
+                "password",
+                "confirmPassword",
+              ].map((field) => (
+                <div className="form-group" key={field}>
+                  <label htmlFor={field}>
+                    {field.charAt(0).toUpperCase() + field.slice(1)}
+                  </label>
+                  <input
+                    type={
+                      field === "password" || field === "confirmPassword"
+                        ? "password"
+                        : "text"
+                    }
+                    id={field}
+                    name={field}
+                    className="form-control"
+                    value={adminDetails[field]}
+                    onChange={(e) => updateAdminDetails(field, e.target.value)}
+                  />
+                </div>
+              ))}
 
               <div className="loginSubmit d-flex justify-content-center">
-                <button type="submit" className="btn btn-primary">
-                  Create Profile
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={loading}
+                >
+                  {loading ? "Creating..." : "Create Profile"}
                 </button>
               </div>
             </form>

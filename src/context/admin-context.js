@@ -1,22 +1,45 @@
-import React, { createContext, useState, useEffect } from "react";
-import axios from "axios";
+import React, { createContext, useState } from "react";
 
 const AdminContext = createContext();
 
 const AdminProvider = ({ children }) => {
   const [admin, setAdmin] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [token, setToken] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [updateAdminData, setUpdateAdminData] = useState(false);
 
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+  // Consolidate all admin-related details into a single object
+  const [adminDetails, setAdminDetails] = useState({
+    name: "",
+    username: "",
+    phone: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    title: "",
+  });
+
+  // Clear the context
   const clearContext = () => {
     setAdmin(null);
     setToken("");
-    setIsAuthenticated(false);
     setUpdateAdminData(false);
+    setAdminDetails({
+      name: "",
+      username: "",
+      phone: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      title: "",
+    });
+  };
+
+  // Dynamic handler for updating admin details
+  const updateAdminDetails = (field, value) => {
+    setAdminDetails((prevDetails) => ({
+      ...prevDetails,
+      [field]: value,
+    }));
   };
 
   return (
@@ -24,15 +47,14 @@ const AdminProvider = ({ children }) => {
       value={{
         admin,
         setAdmin,
+        adminDetails,
+        setAdminDetails,
+        updateAdminDetails,
         token,
         setToken,
-        isAuthenticated,
-        setIsAuthenticated,
-        loading,
-        setLoading,
         updateAdminData,
         setUpdateAdminData,
-        clearContext, // Provide the clearContext method
+        clearContext,
       }}
     >
       {children}

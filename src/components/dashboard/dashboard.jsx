@@ -31,9 +31,7 @@ const Dashboard = () => {
               <p>Returns : 0</p>
             </div>
           </Col>
-        </Row>
-        <Row className="Row">
-          <Col className="Col-md-4 ">
+          <Col className="Col-md-6 ">
             <div className="cards my-3 mx-1">
               <h3 className="cardtitle">Today</h3>
               <p>Website Visits : 0</p>
@@ -42,7 +40,7 @@ const Dashboard = () => {
               <p>Returns : 0</p>
             </div>
           </Col>
-          <Col className="Col-md-4 ">
+          <Col className="Col-md-6 ">
             <div className="cards my-3 mx-1">
               <h3 className="cardtitle">This week</h3>
               <p>Website Visits : 0</p>
@@ -51,7 +49,7 @@ const Dashboard = () => {
               <p>Returns : 0</p>
             </div>
           </Col>
-          <Col className="Col-md-4">
+          <Col className="Col-md-6">
             <div className="cards my-3 mx-1">
               <h3 className="cardtitle">This month</h3>
               <p>Website Visits : 0</p>

@@ -1,40 +1,36 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "../../styles/global.css";
-import "../../styles/admin-components/login.css";
 import { useDispatch } from "react-redux"; // Import redux
 import { login } from "../../redux/actions/authActions"; // Import login action
-import axios from "axios"; // Axios import
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import { Link } from "react-router-dom";
 
 const AdminLogin = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); // State for error message
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Initialize the hook here inside the component
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+    setErrorMessage(""); // Reset error message
 
-    try {
-      const response = await axios.post(
-        "/admin/api/v1/admin-login",
-        { username, password },
-        { withCredentials: true }
-      );
-      dispatch(login(response.data));
-
-      console.log("Response data:", response.data);
-
-      if (response.data.success) {
-        const adminData = response.data.admin; // Assuming you get admin data in the response
-        dispatch(login(adminData)); // Dispatch the login action
-        navigate("/admin/dashboard"); // Redirect to the admin dashboard
-      } else {
-        console.log("Login failed:", response.data.message);
-      }
-    } catch (error) {
-      console.error("Error logging in:", error);
-    }
+    // Dispatch the login action with username and password
+    dispatch(login({ username, password }))
+      .then((res) => {
+        console.log("Login Response:", res); // Log the response
+        if (res.success) {
+          setErrorMessage(""); // Clear any previous error
+          alert("Login successful!"); // Show success alert
+          navigate("/dashboard"); // Navigate to the dashboard after successful login
+        } else {
+          setErrorMessage(res.message); // Set error message
+        }
+      })
+      .catch((error) => {
+        console.error("Error logging in:", error);
+        setErrorMessage("An error occurred while logging in."); // Set generic error message
+      });
   };
 
   return (
@@ -42,7 +38,8 @@ const AdminLogin = () => {
       <div className="title">
         <h1>Admin Login</h1>
       </div>
-
+      {errorMessage && <div className="error-message">{errorMessage}</div>}{" "}
+      {/* Display error message */}
       <div className="AdminBody container">
         <div className="admin-card card">
           <div className="card-body">
@@ -77,7 +74,7 @@ const AdminLogin = () => {
                 </button>
               </div>
               <div className="forgotPassword my-2">
-                <Link to="/forgotPassword">forgot password?</Link>
+                <Link to="/forgotPassword">Forgot password?</Link>
               </div>
             </form>
           </div>

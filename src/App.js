@@ -7,12 +7,12 @@ import Footer from "./components/reusable_components/footer";
 import Home from "./components/home";
 
 // Admin components
+import user_management from "./components/user-management/user-management.jsx";
 import AdminLogin from "./components/admin/admin-login.jsx";
 import UpdateProfile from "./components/admin/update-profile.jsx";
 import CreateProfile from "./components/admin/create-profile.jsx";
 import DeleteProfile from "./components/admin/delete-profile.jsx";
 import ForgotPassword from "./components/admin/forgot-password.jsx";
-// import UserManagement from "./components/admin/user-management.jsx";
 
 // Inventory-related components
 import InventoryManagement from "./components/inventory/inventory-management";
@@ -46,9 +46,15 @@ function App() {
       <Navbar />
       <div className="app-content">
         <Routes>
+          {/* Public Routes */}
+          <Route path="/login" element={<AdminLogin />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+
           {/* Protected Routes */}
-          <Route path="/" element={<ProtectedRoute element={Home} />} />
-          {/* update for UserManagement later */}
+          <Route
+            path="/user-management"
+            element={<ProtectedRoute element={user_management} />}
+          />
           <Route path="/" element={<ProtectedRoute element={Home} />} />
           <Route
             path="/update-profile"
@@ -85,11 +91,6 @@ function App() {
           />
         </Routes>
       </div>
-
-      <Routes>
-        <Route path="/login" element={<AdminLogin />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-      </Routes>
 
       {/* <Footer /> */}
     </>
