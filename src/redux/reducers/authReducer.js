@@ -3,6 +3,7 @@ import Cookies from "js-cookie"; // Make sure to install js-cookie
 const initialState = {
   isAuthenticated: false,
   adminData: null,
+  token: null,
 };
 
 const authReducer = (state = initialState, action) => {
@@ -19,6 +20,13 @@ const authReducer = (state = initialState, action) => {
         isAuthenticated: false,
         adminData: null,
       };
+
+    case "SET_CURRENT_ADMIN":
+      return {
+        ...state,
+        adminData: action.payload,
+      };
+
     default:
       return state;
   }

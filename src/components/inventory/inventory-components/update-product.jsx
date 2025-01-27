@@ -1,72 +1,118 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import "../../../styles/global.css";
 import "../../../styles/product-components/create-product.css";
+import { ProductContext } from "../../../context/product-context";
+import axios from "axios";
 
-const CreateProduct = () => {
-  // State to hold the form data
-  const [productData, setProductData] = useState({
-    productId: "",
-    name: "",
-    description: "",
-    price: "",
-    category: "",
-    image: null,
-  });
+const UpdateProduct = () => {
+  const {
+    currentProduct,
+    setCurrentProduct,
+    productDetails,
+    setProductDetails,
+    updateProductDetails,
+    isProductUpdated,
+    setIsProductUpdated,
+  } = useContext(ProductContext);
 
-  // State to manage the search query
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Sample products (could be fetched from an API or Redux store)
-  const productList = [
-    {
-      productId: "1",
-      name: "Engine Part",
-      description: "High-quality engine part",
-      price: 500,
-      category: "Engine",
-      image: "path/to/engine-part-image.jpg", // Replace with actual image path
-    },
-    {
-      productId: "2",
-      name: "Suspension Kit",
-      description: "Durable suspension kit",
-      price: 300,
-      category: "Suspension",
-      image: "path/to/suspension-kit-image.jpg", // Replace with actual image path
-    },
-    {
-      productId: "3",
-      name: "Brake Pads",
-      description: "Reliable brake pads",
-      price: 100,
-      category: "Brakes",
-      image: "path/to/brake-pads-image.jpg", // Replace with actual image path
-    },
-  ];
-
-  // Handle changes in the form fields
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProductData((prevData) => ({
+    const { name, value, files } = e.target;
+    setProductDetails((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: name === "image" ? files[0] : value,
     }));
   };
 
-  // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
-  // Find product based on search query
-  const handleSearch = () => {
-    const product = productList.find((product) =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    if (product) {
-      setProductData(product);
-    } else {
-      alert("Product not found");
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.get(
+        `/products/api/v1/products:name?name=${encodeURIComponent(
+          searchQuery
+        )}`,
+        { withCredentials: true }
+      );
+      console.log(res.data);
+      if (res.data) {
+        setCurrentProduct(res.data.data);
+        setProductDetails({
+          ...res.data.data,
+        });
+        console.log("Image Preview:", productDetails.image);
+
+        alert(`Product found: ${res.data.data.name}`);
+      } else {
+        alert("No product found.");
+        setCurrentProduct(null);
+        setProductDetails({
+          name: "",
+          description: "",
+          price: "",
+          category: "",
+          image: null,
+        });
+      }
+    } catch (error) {
+      console.error(
+        "Error searching for product:",
+        error.response?.data?.message || error.message
+      );
+      alert(
+        error.response?.data?.message || "Failed to search for the product."
+      );
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const productData = {
+        _id: productDetails._id,
+        name: productDetails.name,
+        description: productDetails.description,
+        price: productDetails.price,
+        category: productDetails.category,
+        image: productDetails.image,
+      };
+
+      const response = await axios.put(
+        `/products/api/v1/updateProduct`,
+        productData,
+
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+
+      if (response.status === 200) {
+        alert("Product updated successfully!");
+        setIsProductUpdated(true);
+        setProductDetails({
+          name: "",
+          description: "",
+          price: "",
+          category: "",
+          image: null,
+        });
+      } else {
+        alert("Failed to update product.");
+      }
+    } catch (error) {
+      console.error(
+        "Error updating product:",
+        error.response?.data?.message || error.message
+      );
+      alert(
+        error.response?.data?.message ||
+          "An error occurred while updating the product."
+      );
     }
   };
 
@@ -78,19 +124,9 @@ const CreateProduct = () => {
     { label: "Suspension", value: "Suspension" },
   ];
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission (e.g., save or update the product)
-    console.log("Product data submitted:", productData);
-  };
-
   return (
     <div>
-      <div className="title">
-        <h1>Update Product</h1>
-      </div>
-
-      {/* Centering the search container */}
+      <h1 className="title">Update Product</h1>
       <div className="d-flex justify-content-center align-items-center vh-25">
         <div className="search-container">
           <input
@@ -108,54 +144,57 @@ const CreateProduct = () => {
 
       <div className="create-product-container">
         <div className="create-product-card">
-          {/* Display Product Image at the top */}
-          {productData.image && (
+          {/* {productDetails.image && (
             <div className="image-preview mb-3">
               <img
-                src={productData.image}
+                src={
+                  productDetails.image instanceof File
+                    ? URL.createObjectURL(productDetails.image)
+                    : productDetails.image
+                }
                 alt="Product Preview"
                 className="preview-image"
                 style={{ maxWidth: "100%", height: "auto" }}
+                onError={(e) => {
+                  e.target.src = "/path/to/placeholder-image.jpg"; // Use a placeholder if the image URL is invalid
+                }}
               />
             </div>
-          )}
+          )} */}
 
           <form onSubmit={handleSubmit}>
-            {/* Product ID (hidden or displayed) */}
             <div className="form-group">
-              <label htmlFor="product-id">Product ID</label>
-              <input
-                type="text"
-                id="product-id"
-                name="productId"
-                value={productData.productId}
-                onChange={handleChange}
-                disabled
-                className="form-control"
-              />
-            </div>
-
-            {/* Product Name */}
-            <div className="form-group">
-              <label htmlFor="product-name">Product Name</label>
+              <label htmlFor="product-name">Product Id</label>
               <input
                 type="text"
                 id="product-name"
                 name="name"
-                value={productData.name}
+                value={productDetails._id || ""}
                 onChange={handleChange}
                 required
                 className="form-control"
               />
             </div>
 
-            {/* Product Category */}
+            <div className="form-group">
+              <label htmlFor="product-name">Product Name</label>
+              <input
+                type="text"
+                id="product-name"
+                name="name"
+                value={productDetails.name || ""}
+                onChange={handleChange}
+                required
+                className="form-control"
+              />
+            </div>
+
             <div className="form-group">
               <label htmlFor="product-category">Product Category</label>
               <select
                 id="product-category"
                 name="category"
-                value={productData.category}
+                value={productDetails.category || ""}
                 onChange={handleChange}
                 required
                 className="form-control"
@@ -171,27 +210,25 @@ const CreateProduct = () => {
               </select>
             </div>
 
-            {/* Product Description */}
             <div className="form-group">
               <label htmlFor="product-description">Product Description</label>
               <textarea
                 id="product-description"
                 name="description"
-                value={productData.description}
+                value={productDetails.description || ""}
                 onChange={handleChange}
                 required
                 className="form-control"
               />
             </div>
 
-            {/* Product Price */}
             <div className="form-group">
               <label htmlFor="product-price">Price (Rs.)</label>
               <input
                 type="number"
                 id="product-price"
                 name="price"
-                value={productData.price}
+                value={productDetails.price || ""}
                 onChange={handleChange}
                 required
                 min="0"
@@ -200,19 +237,18 @@ const CreateProduct = () => {
               />
             </div>
 
-            {/* Product Image Upload */}
             <div className="form-group">
               <label htmlFor="product-image">Product Image</label>
               <input
                 type="file"
                 id="product-image"
+                name="image"
                 accept="image/*"
                 onChange={handleChange}
                 className="form-control"
               />
             </div>
 
-            {/* Submit Button */}
             <button type="submit" className="btn btn-success mt-3">
               Update Product
             </button>
@@ -223,4 +259,4 @@ const CreateProduct = () => {
   );
 };
 
-export default CreateProduct;
+export default UpdateProduct;

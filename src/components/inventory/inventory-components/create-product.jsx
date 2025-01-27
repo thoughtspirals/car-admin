@@ -1,38 +1,49 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
+import axios from "axios";
+import { ProductContext } from "../../../context/product-context"; // Adjust the path if needed
 import "../../../styles/global.css";
 import "../../../styles/product-components/create-product.css";
 
 const CreateProduct = () => {
-  const [productData, setProductData] = useState({
-    name: "",
-    description: "",
-    price: "",
-    category: "",
-    image: null,
-  });
+  const { productDetails, updateProductDetails } = useContext(ProductContext);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProductData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    updateProductDetails(name, value);
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setProductData((prevData) => ({
-        ...prevData,
-        image: URL.createObjectURL(file), // Create a URL for the uploaded image
-      }));
+      updateProductDetails("image", file); // Store the file for backend compatibility
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log("Product data submitted:", productData);
+
+    try {
+      const formData = new FormData();
+      Object.keys(productDetails).forEach((key) => {
+        formData.append(key, productDetails[key]);
+      });
+
+      const response = await axios.post(
+        "/products/api/v1/create-product",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("Product created successfully:", response.data);
+      alert("Product created successfully!");
+    } catch (error) {
+      console.error("Error creating product:", error);
+      alert("Failed to create product. Please try again.");
+    }
   };
 
   const productCategories = [
@@ -57,7 +68,7 @@ const CreateProduct = () => {
                 type="text"
                 id="product-name"
                 name="name"
-                value={productData.name}
+                value={productDetails.name}
                 onChange={handleInputChange}
                 required
               />
@@ -68,7 +79,7 @@ const CreateProduct = () => {
               <select
                 id="product-category"
                 name="category"
-                value={productData.category}
+                value={productDetails.category}
                 onChange={handleInputChange}
                 required
               >
@@ -88,7 +99,7 @@ const CreateProduct = () => {
               <textarea
                 id="product-description"
                 name="description"
-                value={productData.description}
+                value={productDetails.description}
                 onChange={handleInputChange}
                 required
               />
@@ -100,7 +111,7 @@ const CreateProduct = () => {
                 type="number"
                 id="product-price"
                 name="price"
-                value={productData.price}
+                value={productDetails.price}
                 onChange={handleInputChange}
                 required
                 min="0"
@@ -116,13 +127,9 @@ const CreateProduct = () => {
                 onChange={handleImageChange}
                 required
               />
-              {productData.image && (
+              {productDetails.image && (
                 <div className="image-preview">
-                  <img
-                    src={productData.image}
-                    alt="Product Preview"
-                    className="preview-image"
-                  />
+                  <p>{productDetails.image.name}</p>
                 </div>
               )}
             </div>

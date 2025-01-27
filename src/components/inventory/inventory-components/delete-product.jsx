@@ -1,66 +1,94 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { ProductContext } from "../../../context/product-context";
 import "../../../styles/global.css";
 import "../../../styles/product-components/delete-product.css";
+import axios from "axios";
 
 const DeleteProduct = () => {
-  // Sample product list
-  const productList = [
-    {
-      productId: "1",
-      name: "Engine Part",
-      description: "High-quality engine part",
-      price: 500,
-      category: "Engine",
-      image: "path/to/engine-part-image.jpg", // Replace with actual image path
-    },
-    {
-      productId: "2",
-      name: "Suspension Kit",
-      description: "Durable suspension kit",
-      price: 300,
-      category: "Suspension",
-      image: "path/to/suspension-kit-image.jpg", // Replace with actual image path
-    },
-    {
-      productId: "3",
-      name: "Brake Pads",
-      description: "Reliable brake pads",
-      price: 100,
-      category: "Brakes",
-      image: "path/to/brake-pads-image.jpg", // Replace with actual image path
-    },
-  ];
+  const {
+    currentProduct,
+    setCurrentProduct,
+    productDetails,
+    setProductDetails,
+    updateProductDetails,
+    isProductUpdated,
+    setIsProductUpdated,
+  } = useContext(ProductContext);
 
-  // State to hold search query and selected product data
   const [searchQuery, setSearchQuery] = useState("");
   const [productData, setProductData] = useState(null);
+  const [productId, setProductId] = useState("");
 
-  // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
-  // Function to search for a product
-  const handleSearch = () => {
-    const product = productList.find((product) =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    if (product) {
-      setProductData(product); // Update product data with the found product
-    } else {
-      setProductData(null); // Clear product data if not found
-      alert("Product not found");
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.get(
+        `/products/api/v1/products:name?name=${encodeURIComponent(
+          searchQuery
+        )}`,
+        { withCredentials: true }
+      );
+      console.log(res.data);
+      if (res.data) {
+        setCurrentProduct(res.data.data);
+        setProductId(res.data.data._id);
+        console.log(productId);
+
+        setProductDetails({
+          ...res.data.data,
+        });
+        console.log("Image Preview:", productDetails.image);
+
+        alert(`Product found: ${res.data.data._id}`);
+      } else {
+        alert("No product found.");
+        setCurrentProduct(null);
+        setProductDetails({
+          name: "",
+          description: "",
+          price: "",
+          category: "",
+          image: null,
+        });
+      }
+    } catch (error) {
+      console.error(
+        "Error searching for product:",
+        error.response?.data?.message || error.message
+      );
+      alert(
+        error.response?.data?.message || "Failed to search for the product."
+      );
     }
   };
 
-  // Function to delete a product (not connected to a backend or state here)
-  const handleDelete = (productId) => {
+  const handleDelete = async () => {
     const confirmDelete = window.confirm(
       `Are you sure you want to delete the product with ID: ${productId}?`
     );
-    if (confirmDelete) {
-      alert(`Product with ID: ${productId} has been deleted.`);
-      setProductData(null); // Clear product data after deletion
+
+    try {
+      const response = await axios.delete(
+        `/products/api/v1/deleteProduct/${productId}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (response.status === 200) {
+        alert("Product deleted successfully!");
+      } else {
+        alert("Failed to delete product.");
+      }
+    } catch (error) {
+      console.error(
+        "Error deleting product:",
+        error.response?.data?.message || error.message
+      );
     }
   };
 
@@ -71,7 +99,6 @@ const DeleteProduct = () => {
       </div>
 
       <div className="delete-product-container">
-        {/* Search bar container */}
         <div className="d-flex justify-content-center align-items-center vh-25">
           <div className="search-container">
             <input
@@ -87,20 +114,19 @@ const DeleteProduct = () => {
           </div>
         </div>
 
-        {/* Display product details or no product found */}
-        {productData ? (
+        {productDetails ? (
           <div
             className="product-card"
             style={{ textAlign: "center", marginTop: "20px" }}
           >
-            <h3>{productData.name}</h3>
-            <h4>Product ID: {productData.productId}</h4>
-            <p>{productData.description}</p>
-            <p>Category: {productData.category}</p>
-            <p>Price: Rs. {productData.price}</p>
+            <h3>{productDetails.name}</h3>
+            <h4>Product ID: {productDetails._id}</h4>
+            <p>{productDetails.description}</p>
+            <p>Category: {productDetails.category}</p>
+            <p>Price: Rs. {productDetails.price}</p>
             <img
-              src={productData.image}
-              alt={productData.name}
+              src={productDetails.image}
+              alt={productDetails.name}
               style={{
                 maxWidth: "200px",
                 maxHeight: "200px",
@@ -109,10 +135,7 @@ const DeleteProduct = () => {
               }}
             />
             <div>
-              <button
-                onClick={() => handleDelete(productData.productId)}
-                className="btn btn-danger"
-              >
+              <button onClick={handleDelete} className="btn btn-danger">
                 Delete Product
               </button>
             </div>

@@ -5,6 +5,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import { AdminProvider } from "./context/admin-context";
+import { ProductProvider } from "./context/product-context";
 import { Provider } from "react-redux";
 import store from "./redux/store";
 
@@ -14,7 +15,9 @@ root.render(
   <BrowserRouter>
     <Provider store={store}>
       <AdminProvider>
-        <App />
+        <ProductProvider>
+          <App />
+        </ProductProvider>
       </AdminProvider>
     </Provider>
   </BrowserRouter>
